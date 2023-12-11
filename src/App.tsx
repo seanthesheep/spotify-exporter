@@ -14,12 +14,17 @@ function App() {
     let token = window.localStorage.getItem("token")
 
     if (!token && hash) {
-      token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
-      window.location.hash = ""
-      window.localStorage.setItem("token", token)
+      const hashArray = hash.substring(1).split("&");
+      const tokenElement = hashArray.find(elem => elem.startsWith("access_token"));
+
+      if (tokenElement) {
+        token = tokenElement.split("=")[1];
+        window.location.hash = "";
+        window.localStorage.setItem("token", token);
+      }
+      setToken(token)
+      console.log('token ', token);
     }
-    setToken(token)
-    console.log('token ', token)
   }, [])
 
   const downloadPlaylists = (playlist: object) => {
