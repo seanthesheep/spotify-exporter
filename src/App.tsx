@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 function App() {
 
   const CLIENT_ID = "c72b06e411024710b5398901c7aebc41"
-  const REDIRECT_URI = "http://localhost:5173"
+  const REDIRECT_URI = "https://main.d1ls3jukeq1qtt.amplifyapp.com"
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
 
