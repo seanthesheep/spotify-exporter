@@ -9,6 +9,7 @@ function App() {
   const timeStamp = new Date().getTime();
 
   const [token, setToken] = useState<string | null>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -42,11 +43,13 @@ function App() {
     link.target = '_blank';
     link.download = `your-playlists-${timeStamp}.json`;
     link.click();
+    setIsLoading(false)
 
     URL.revokeObjectURL(blobUrl);
   }
 
   const fetchPlaylists = async () => {
+    setIsLoading(true)
     const requestBody = {
       // Ideally a separate request would be made to retrieve the spotify user id to use here
       userId: timeStamp,
@@ -73,6 +76,7 @@ function App() {
       downloadPlaylists(playlists.url)
 
     } catch (err: any) {
+      setIsLoading(false)
       console.error('Error:', err.message);
     }
   };
@@ -98,19 +102,26 @@ function App() {
           </a>
         ) : (
           <div className="flex flex-col items-center space-y-4">
-            <button
-              onClick={fetchPlaylists}
-              className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-            >
-              Get Playlists
-            </button>
-            <button
-              onClick={logout}
-              className="bg-transparent hover:bg-red-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring focus:border-blue-300"
-            >
-              Logout
-            </button>
-
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
+              </div>
+            ) : (
+              <div>
+                <button
+                  onClick={fetchPlaylists}
+                  className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+                >
+                  Get Playlists
+                </button>
+                <button
+                  onClick={logout}
+                  className="bg-transparent hover:bg-red-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring focus:border-blue-300"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
