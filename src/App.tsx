@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 
 function App() {
 
-  const CLIENT_ID = "c72b06e411024710b5398901c7aebc41"
-  const REDIRECT_URI = "https://main.d1ls3jukeq1qtt.amplifyapp.com"
-  const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
-  const RESPONSE_TYPE = "token"
+  const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+  const AUTH_ENDPOINT = import.meta.env.VITE_AUTH_ENDPOINT;
+  const RESPONSE_TYPE = import.meta.env.VITE_RESPONSE_TYPE;
+  const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL;
   const timeStamp = new Date().getTime();
 
   const [token, setToken] = useState<string | null>("")
@@ -28,6 +29,11 @@ function App() {
     setToken(storedToken);
   }, [])
 
+  /** 
+   * Takes URL from S3 Bucket and downloads it as a file
+   *
+   * @param url - url of file retrieved from fetchPlaylists()
+   * */
   const downloadPlaylists = async (url: string) => {
     const response = await fetch(url);
 
@@ -48,10 +54,15 @@ function App() {
     URL.revokeObjectURL(blobUrl);
   }
 
+  /**
+   * Fetches all user playlists from Spotify via lambda function 
+   * LAMBDA_URL.lambda-url.us-east-2.on.aws/'
+   * */
   const fetchPlaylists = async () => {
     setIsLoading(true)
     const requestBody = {
-      // Ideally a separate request would be made to retrieve the spotify user id to use here
+      // note to songshift code reviewer: ideally a separate request would be made to retrieve 
+      // the spotify user id to use here
       userId: timeStamp,
       token: token,
     };
@@ -59,7 +70,7 @@ function App() {
     const requestBodyJson = JSON.stringify(requestBody);
 
     try {
-      const playlistData = await fetch('https://ybstosz3dyfnno6sr6szwgu2ni0ikikr.lambda-url.us-east-2.on.aws/', {
+      const playlistData = await fetch(`${LAMBDA_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +91,6 @@ function App() {
       console.error('Error:', err.message);
     }
   };
-
 
   const logout = () => {
     setToken("")
