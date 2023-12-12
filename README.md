@@ -2,6 +2,8 @@
 
 An app that exports all of a user's Spotify playlists as a json file.
 
+[Live App](https://main.d1ls3jukeq1qtt.amplifyapp.com/)
+
 - uses AWS lambda, S3, and Amplify
 - user logs in from client and lambda function fetches playlists and returns an S3 bucket URL
 - client downloads json file from url
