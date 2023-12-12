@@ -10,21 +10,20 @@ function App() {
   const [token, setToken] = useState<string | null>("")
 
   useEffect(() => {
-    const hash = window.location.hash
-    let token = window.localStorage.getItem("token")
+    const hash = window.location.hash;
+    let storedToken = window.localStorage.getItem("token");
 
-    if (!token && hash) {
-      const hashArray = hash.substring(1).split("&");
-      const tokenElement = hashArray.find(elem => elem.startsWith("access_token"));
+    if (!storedToken && hash) {
+      const tokenElement = hash.substring(1).split("&").find(elem => elem.startsWith("access_token"));
 
       if (tokenElement) {
-        token = tokenElement.split("=")[1];
+        storedToken = tokenElement.split("=")[1];
         window.location.hash = "";
-        window.localStorage.setItem("token", token);
+        window.localStorage.setItem("token", storedToken);
       }
-      setToken(token)
-      console.log('token ', token);
     }
+
+    setToken(storedToken);
   }, [])
 
   const downloadPlaylists = async (url: string) => {
