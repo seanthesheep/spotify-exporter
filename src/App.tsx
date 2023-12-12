@@ -6,6 +6,7 @@ function App() {
   const REDIRECT_URI = "https://main.d1ls3jukeq1qtt.amplifyapp.com"
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
+  const timeStamp = new Date().getTime();
 
   const [token, setToken] = useState<string | null>("")
 
@@ -39,24 +40,22 @@ function App() {
     const link = document.createElement('a');
     link.href = blobUrl;
     link.target = '_blank';
-    link.download = 'your-playlists.json';
+    link.download = `your-playlists-${timeStamp}.json`;
     link.click();
 
     URL.revokeObjectURL(blobUrl);
   }
 
-
-
   const fetchPlaylists = async () => {
     const requestBody = {
-      userId: token,
+      // Ideally a separate request would be made to retrieve the spotify user id to use here
+      userId: timeStamp,
       token: token,
     };
 
-    // Convert the data to JSON format
     const requestBodyJson = JSON.stringify(requestBody);
+
     try {
-      // Fetch playlists
       const playlistData = await fetch('https://ybstosz3dyfnno6sr6szwgu2ni0ikikr.lambda-url.us-east-2.on.aws/', {
         method: 'POST',
         headers: {
@@ -73,7 +72,6 @@ function App() {
 
       downloadPlaylists(playlists.url)
 
-      console.log('Data saved to playlists_data.json');
     } catch (err: any) {
       console.error('Error:', err.message);
     }
@@ -86,32 +84,33 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full p-6 bg-white rounded-md shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 bg-slate-800">
+      <div className="max-w-md w-full p-6 rounded-md shadow-md bg-slate-600">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Spotify Playlist Fetcher</h1>
+          <h1 className="text-3xl font-bold text-white">Spotify Playlist Fetcher</h1>
         </header>
         {!token ? (
           <a
             href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
-            className="block w-full py-2 px-4 text-center bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-600 focus:outline-none focus:ring focus:border-blue-300"
+            className="block w-full py-2 px-4 text-center bg-green-500 text-black font-semibold rounded-full shadow-md hover:bg-green-600 focus:outline-none focus:ring focus:border-blue-300"
           >
             Login to Spotify
           </a>
         ) : (
           <div className="flex flex-col items-center space-y-4">
             <button
-              onClick={logout}
-              className="bg-red-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring focus:border-blue-300"
-            >
-              Logout
-            </button>
-            <button
               onClick={fetchPlaylists}
               className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
             >
               Get Playlists
             </button>
+            <button
+              onClick={logout}
+              className="bg-transparent hover:bg-red-800 text-white py-2 px-4 rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring focus:border-blue-300"
+            >
+              Logout
+            </button>
+
           </div>
         )}
       </div>
