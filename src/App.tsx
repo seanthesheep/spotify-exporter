@@ -27,17 +27,23 @@ function App() {
     }
   }, [])
 
-  const downloadPlaylists = (playlist: object) => {
-    const filename = "your-playlists.json";
-    const fileToSave = new Blob([JSON.stringify(playlist)], {
-      type: 'application/json'
-    })
-    const url = URL.createObjectURL(fileToSave);
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.download = filename;
+  const downloadPlaylists = async (url: string) => {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data (HTTP ${response.status})`);
+    }
+    const jsonData = await response.json();
+
+    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.target = '_blank';
+    link.download = 'your-playlists.json';
     link.click();
+
+    URL.revokeObjectURL(blobUrl);
   }
 
 
@@ -66,7 +72,7 @@ function App() {
 
       const playlists = await playlistData.json();
 
-      downloadPlaylists(playlists)
+      downloadPlaylists(playlists.url)
 
       console.log('Data saved to playlists_data.json');
     } catch (err: any) {
