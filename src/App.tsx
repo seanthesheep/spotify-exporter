@@ -98,7 +98,7 @@ function App() {
             href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
             className="block w-full py-2 px-4 text-center bg-green-500 text-black font-semibold rounded-full shadow-md hover:bg-green-600 focus:outline-none focus:ring focus:border-blue-300"
           >
-            Login to Spotify
+            Login with Spotify
           </a>
         ) : (
           <div className="flex flex-col items-center space-y-4">
@@ -107,11 +107,10 @@ function App() {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
               </div>
             ) : (
-              <div>
+              <div className="flex">
                 <button
                   onClick={fetchPlaylists}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-                >
+                  className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2">
                   Get Playlists
                 </button>
                 <button
