@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+import Playlists from './Playlists';
 
 function App() {
 
@@ -9,8 +10,9 @@ function App() {
   const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL;
   const timeStamp = new Date().getTime();
 
-  const [token, setToken] = useState<string | null>("")
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [token, setToken] = useState<string | null>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [playlistsUrl, setPlaylistsUrl] = useState<string>("");
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -82,9 +84,10 @@ function App() {
         throw new Error(`Failed to fetch playlists. Status: ${playlistData.status}`);
       }
 
-      const playlists = await playlistData.json();
+      const res = await playlistData.json();
 
-      downloadPlaylists(playlists.url)
+      setPlaylistsUrl(res.url);
+      downloadPlaylists(res.url);
 
     } catch (err: any) {
       setIsLoading(false)
@@ -92,13 +95,15 @@ function App() {
     }
   };
 
+  /** Log out and erase token/playlist url */
   const logout = () => {
-    setToken("")
+    setToken("");
+    setPlaylistsUrl("");
     window.localStorage.removeItem("token")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 bg-slate-800">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 bg-slate-800">
       <div className="max-w-md w-full p-6 rounded-md shadow-md bg-slate-600">
         <header className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">Spotify Playlist Fetcher</h1>
@@ -134,6 +139,11 @@ function App() {
           </div>
         )}
       </div>
+      {playlistsUrl.length > 0 && (
+        <div className="w-full mt-4">
+          <Playlists url={playlistsUrl} />
+        </div>
+      )}
     </div>
   )
 }
